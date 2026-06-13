@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xác nhận vị trí</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px 30px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      max-width: 360px;
+      width: 100%;
+    }
+    .icon { font-size: 64px; margin-bottom: 16px; }
+    h2 { color: #333; margin-bottom: 8px; font-size: 20px; }
+    p { color: #888; font-size: 14px; margin-bottom: 24px; }
+    .btn {
+      background: #007aff;
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+    }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .status { margin-top: 16px; font-size: 14px; color: #555; min-height: 20px; }
+    .error { color: #ff3b30; }
+    .success { color: #34c759; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">📍</div>
+    <h2>Xác nhận vị trí</h2>
+    <p>Vui lòng cho phép truy cập vị trí để tiếp tục</p>
+    <button class="btn" id="btn" onclick="checkLocation()">
+      XÁC NHẬN VỊ TRÍ
+    </button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <script>
+    const TARGET_LAT = 10.816551;
+    const TARGET_LNG = 106.663563;
+    const MAX_DISTANCE = 50;
+    const REDIRECT_URL = "https://tally.so/r/BzbLye";
+
+    function checkLocation() {
+      const btn = document.getElementById("btn");
+      const status = document.getElementById("status");
+
+      btn.disabled = true;
+      btn.textContent = "Đang lấy vị trí...";
+      status.textContent = "";
+      status.className = "status";
+
+      if (!navigator.geolocation) {
+        status.textContent = "❌ Trình duyệt không hỗ trợ GPS!";
+        status.className = "status error";
+        btn.disabled = false;
+        btn.textContent = "XÁC NHẬN VỊ TRÍ";
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        function(pos) {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          const dist = getDistance(lat, lng, TARGET_LAT, TARGET_LNG);
+
+          if (dist <= MAX_DISTANCE) {
+            status.textContent = "✅ Xác nhận thành công! Đang chuyển hướng...";
+            status.className = "status success";
+            btn.textContent = "✅ OK";
+            setTimeout(function() {
+              window.location.href = REDIRECT_URL;
+            }, 1000);
+          } else {
+            status.textContent = "❌ Bạn không ở đúng địa điểm! (cách " + Math.round(dist) + "m)";
+            status.className = "status error";
+            btn.disabled = false;
+            btn.textContent = "THỬ LẠI";
+          }
+        },
+        function(err) {
+          let msg = "❌ Không lấy được vị trí!";
+          if (err.code === 1) msg = "❌ Bạn đã từ chối quyền GPS! Vui lòng quét lại mã QR và xác nhận vị trí!";
+          if (err.code === 2) msg = "❌ Không xác định được vị trí!";
+          if (err.code === 3) msg = "❌ Quá thời gian, thử lại!";
+          status.textContent = msg;
+          status.className = "status error";
+          btn.disabled = false;
+          btn.textContent = "THỬ LẠI";
+        },
+        { timeout: 10000, maximumAge: 0, enableHighAccuracy: true }
+      );
+    }
+
+    function getDistance(lat1, lng1, lat2, lng2) {
+      const R = 6371000;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLng = (lng2 - lng1) * Math.PI / 180;
+      const a =
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180) *
+        Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLng/2) * Math.sin(dLng/2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+  </script>
+</body>
+</html>
