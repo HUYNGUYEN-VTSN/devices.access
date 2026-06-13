@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Xác nhận vị trí</title>
+  <title>VUI LÒNG XÁC NHẬN VỊ TRÍ</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -91,7 +91,7 @@
               window.location.href = REDIRECT_URL;
             }, 1000);
           } else {
-            status.textContent = "❌ Bạn không ở đúng địa điểm! (cách " + Math.round(dist) + "m)";
+            status.textContent = "❌ VỊ TRÍ KHÔNG PHÙ HỢP - YÊU CẦU SỬ DỤNG GẦN PHÒNG ĐỘI ";
             status.className = "status error";
             btn.disabled = false;
             btn.textContent = "THỬ LẠI";
@@ -99,7 +99,7 @@
         },
         function(err) {
           let msg = "❌ Không lấy được vị trí!";
-          if (err.code === 1) msg = "❌ Bạn đã từ chối quyền GPS! Vui lòng quét lại mã QR và xác nhận vị trí!";
+          if (err.code === 1) msg = "❌ Vui lòng quét lại mã QR và xác nhận vị trí!";
           if (err.code === 2) msg = "❌ Không xác định được vị trí!";
           if (err.code === 3) msg = "❌ Quá thời gian, thử lại!";
           status.textContent = msg;
