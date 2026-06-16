@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NHẬN / TRẢ THIẾT BỊ</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px 20px;
+      max-width: 420px;
+      margin: 0 auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #1a7f4b;
+      font-size: 22px;
+      margin-bottom: 24px;
+    }
+    .label {
+      font-weight: bold;
+      color: #c0392b;
+      font-size: 13px;
+      margin-bottom: 8px;
+      margin-top: 16px;
+    }
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .opt {
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 2px solid #ddd;
+      cursor: pointer;
+      font-size: 14px;
+      background: white;
+      transition: all 0.2s;
+    }
+    .opt.selected-thietbi { background: #e8f5e9; border-color: #1a7f4b; color: #1a7f4b; font-weight: bold; }
+    .opt.selected-hanhdong-nhan { background: #fff9c4; border-color: #f1c40f; color: #7d6608; font-weight: bold; }
+    .opt.selected-hanhdog-tra { background: #f3e8ff; border-color: #9b59b6; color: #6c3483; font-weight: bold; }
+    .opt.selected-bodam { background: #e8f0ff; border-color: #3498db; color: #1a5276; font-weight: bold; }
+    .opt.selected-thetu { background: #fce8ff; border-color: #e91e8c; color: #880e4f; font-weight: bold; }
+    select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 2px solid #ddd;
+      font-size: 15px;
+      margin-top: 4px;
+      background: white;
+    }
+    .btn-submit {
+      margin-top: 28px;
+      width: 100%;
+      padding: 16px;
+      background: #1a7f4b;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      letter-spacing: 1px;
+    }
+    .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
+    .status {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 14px;
+      min-height: 20px;
+    }
+    .error { color: #ff3b30; }
+    .success { color: #34c759; }
+    #section-bodam, #section-thetu { display: none; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h2>🎙️ BỘ ĐÀM / THẺ TỪ</h2>
+
+  <!-- THIẾT BỊ -->
+  <div class="label">THIẾT BỊ *</div>
+  <div class="options" id="opts-thietbi">
+    <div class="opt" onclick="select('thietbi', 'BỘ ĐÀM', this)">BỘ ĐÀM</div>
+    <div class="opt" onclick="select('thietbi', 'THẺ TỪ', this)">THẺ TỪ</div>
+  </div>
+
+  <!-- HÀNH ĐỘNG -->
+  <div class="label">HÀNH ĐỘNG *</div>
+  <div class="options" id="opts-hanhdog">
+    <div class="opt" onclick="select('hanhdog', 'NHẬN', this)">NHẬN</div>
+    <div class="opt" onclick="select('hanhdog', 'TRẢ', this)">TRẢ</div>
+  </div>
+
+  <!-- BỘ ĐÀM -->
+  <div id="section-bodam">
+    <div class="label">BỘ ĐÀM *</div>
+    <div class="options" id="opts-bodam">
+      <div class="opt" onclick="select('bodam', '3', this)">3</div>
+      <div class="opt" onclick="select('bodam', '4', this)">4</div>
+      <div class="opt" onclick="select('bodam', '5', this)">5</div>
+      <div class="opt" onclick="select('bodam', '6', this)">6</div>
+      <div class="opt" onclick="select('bodam', '7', this)">7</div>
+      <div class="opt" onclick="select('bodam', '8', this)">8</div>
+      <div class="opt" onclick="select('bodam', '9', this)">9</div>
+      <div class="opt" onclick="select('bodam', '10', this)">10</div>
+      <div class="opt" onclick="select('bodam', '11', this)">11</div>
+    </div>
+  </div>
+
+  <!-- THẺ TỪ -->
+  <div id="section-thetu">
+    <div class="label">THẺ TỪ *</div>
+    <div class="options" id="opts-thetu">
+      <div class="opt" onclick="select('thetu', '5', this)">5</div>
+      <div class="opt" onclick="select('thetu', '12', this)">12</div>
+    </div>
+  </div>
+
+  <!-- NGƯỜI DÙNG -->
+  <div class="label">NGƯỜI DÙNG *</div>
+  <select id="nguoidung">
+    <option value="">-- Chọn tên --</option>
+    <option>UYÊN 3</option>
+    <option>TRÍ 4</option>
+    <option>LINH 2</option>
+    <option>TUẤN 5</option>
+  </select>
+
+  <button class="btn-submit" id="btn" onclick="handleSubmit()">XÁC NHẬN THÔNG TIN →</button>
+  <div class="status" id="status"></div>
+</div>
+
+<script>
+  const TARGET_LAT = 10.816551;
+  const TARGET_LNG = 106.663563;
+  const MAX_DISTANCE = 100;
+  const WEB_APP_URL = "URL_APPS_SCRIPT_CỦA_MÀY";
+
+  const selected = {
+    thietbi: "",
+    hanhdog: "",
+    bodam: "",
+    thetu: ""
+  };
+
+  function select(type, value, el) {
+    const colorMap = {
+      thietbi: "selected-thietbi",
+      hanhdog: value === "NHẬN" ? "selected-hanhdog-nhan" : "selected-hanhdog-tra",
+      bodam: "selected-bodam",
+      thetu: "selected-thetu"
+    };
+    document.querySelectorAll("#opts-" + type + " .opt").forEach(o => {
+      o.className = "opt";
+    });
+    el.classList.add(colorMap[type]);
+    selected[type] = value;
+
+    if (type === "thietbi") {
+      document.getElementById("section-bodam").style.display = value === "BỘ ĐÀM" ? "block" : "none";
+      document.getElementById("section-thetu").style.display = value === "THẺ TỪ" ? "block" : "none";
+      selected.bodam = "";
+      selected.thetu = "";
+      document.querySelectorAll("#opts-bodam .opt, #opts-thetu .opt").forEach(o => o.className = "opt");
+    }
+  }
+
+  function handleSubmit() {
+    const nguoidung = document.getElementById("nguoidung").value;
+    const thietbi = selected.thietbi;
+    const hanhdog = selected.hanhdog;
+    const deviceNumber = thietbi === "BỘ ĐÀM" ? selected.bodam : selected.thetu;
+
+    if (!thietbi || !hanhdog || !deviceNumber || !nguoidung) {
+      showStatus("❌ Vui lòng điền đầy đủ thông tin!", "error");
+      return;
+    }
+
+    if (hanhdog === "TRẢ") {
+      checkGPS(thietbi, hanhdog, deviceNumber, nguoidung);
+    } else {
+      submitData(thietbi, hanhdog, deviceNumber, nguoidung);
+    }
+  }
+
+  function checkGPS(thietbi, hanhdog, deviceNumber, nguoidung) {
+    const btn = document.getElementById("btn");
+    btn.disabled = true;
+    btn.textContent = "Đang kiểm tra vị trí...";
+    showStatus("📍 Đang lấy vị trí GPS...", "");
+
+    if (!navigator.geolocation) {
+      showStatus("❌ Trình duyệt không hỗ trợ GPS!", "error");
+      resetBtn();
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        const dist = getDistance(pos.coords.latitude, pos.coords.longitude, TARGET_LAT, TARGET_LNG);
+        if (dist <= MAX_DISTANCE) {
+          submitData(thietbi, hanhdog, deviceNumber, nguoidung);
+        } else {
+          showStatus("❌ Bạn không ở đúng địa điểm! (cách " + Math.round(dist) + "m)", "error");
+          resetBtn();
+        }
+      },
+      function(err) {
+        let msg = "❌ Không lấy được vị trí!";
+        if (err.code === 1) msg = "❌ Bạn đã từ chối quyền GPS!";
+        if (err.code === 3) msg = "❌ Quá thời gian, thử lại!";
+        showStatus(msg, "error");
+        resetBtn();
+      },
+      { timeout: 10000, maximumAge: 0, enableHighAccuracy: true }
+    );
+  }
+
+  function submitData(thietbi, hanhdog, deviceNumber, nguoidung) {
+    const btn = document.getElementById("btn");
+    btn.disabled = true;
+    btn.textContent = "Đang gửi...";
+    showStatus("", "");
+
+    fetch(WEB_APP_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        thietbi: thietbi,
+        hanhdog: hanhdog,
+        deviceNumber: deviceNumber,
+        nguoidung: nguoidung
+      })
+    })
+    .then(r => r.text())
+    .then(t => {
+      if (t.includes("OK")) {
+        showStatus("✅ Xác nhận thành công!", "success");
+        btn.textContent = "✅ HOÀN TẤT";
+        setTimeout(() => location.reload(), 2000);
+      } else {
+        showStatus("❌ Lỗi gửi dữ liệu!", "error");
+        resetBtn();
+      }
+    })
+    .catch(() => {
+      showStatus("❌ Lỗi kết nối!", "error");
+      resetBtn();
+    });
+  }
+
+  function getDistance(lat1, lng1, lat2, lng2) {
+    const R = 6371000;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLng/2) * Math.sin(dLng/2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+
+  function showStatus(msg, type) {
+    const s = document.getElementById("status");
+    s.textContent = msg;
+    s.className = "status " + type;
+  }
+
+  function resetBtn() {
+    const btn = document.getElementById("btn");
+    btn.disabled = false;
+    btn.textContent = "XÁC NHẬN THÔNG TIN →";
+  }
+</script>
+</body>
+</html>
